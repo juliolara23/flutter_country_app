@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:release_app/controllers/country_controller.dart';
 import 'package:release_app/services/country_service.dart';
+import 'package:release_app/services/notifications_service.dart';
 import 'package:release_app/ui/pages/country_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Get.lazyPut<CountryService>(() => CountryService());
   Get.lazyPut<CountryController>(() => CountryController());
+  Get.lazyPut<NotificationService>(() => NotificationService());
   runApp(const MyApp());
 }
 
@@ -33,7 +35,7 @@ class MyApp extends StatelessWidget {
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Woolha.com Flutter Tutorial'),
+          title: const Text('Paises'),
           backgroundColor: Colors.teal,
         ),
         body: Column(

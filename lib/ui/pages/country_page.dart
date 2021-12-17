@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:release_app/controllers/country_controller.dart';
 import 'package:release_app/model/country.dart';
+import 'package:release_app/services/notifications_service.dart';
 
 class CountryPage extends StatefulWidget {
   const CountryPage({Key? key}) : super(key: key);
@@ -12,14 +13,27 @@ class CountryPage extends StatefulWidget {
 
 class _CountryPage extends State<CountryPage> {
   final CountryController _countryController = Get.find();
+  final NotificationService _notificationService = Get.find();
+
+  late AppLifecycleState state;
 
   @override
   void initState() {
+    init();
     super.initState();
+  }
+
+  void init() async {
+    await _notificationService.init();
   }
 
   @override
   Widget build(BuildContext context) {
+    /*if (_countryController.countries.isEmpty) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    } else {*/
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: Autocomplete<Country>(
@@ -41,8 +55,26 @@ class _CountryPage extends State<CountryPage> {
             style: const TextStyle(fontWeight: FontWeight.bold),
           );
         },
-        onSelected: (Country selection) {
-          print('Selected: ${selection.countryName}');
+        onSelected: (Country selection) async {
+          //print('Selected: ${selection.countryName}');
+          await _notificationService.showNotification(
+              "Selección", "Selecciono el país: ${selection.countryName}");
+          showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: Text(selection.countryName),
+              content: Text(
+                  " Código del país: ${selection.countryCode} \n Capital: ${selection.capital} \n Moneda: ${selection.currencyCode} \n Lenguajes: ${selection.languages}"),
+              actions: <Widget>[
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                  },
+                  child: const Text("Volver"),
+                ),
+              ],
+            ),
+          );
         },
         optionsViewBuilder: (BuildContext context,
             AutocompleteOnSelected<Country> onSelected,
@@ -77,4 +109,5 @@ class _CountryPage extends State<CountryPage> {
       ),
     );
   }
+  //}
 }
